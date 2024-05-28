@@ -1,8 +1,13 @@
-FROM golang:1.22-alpine
+FROM golang:1.8 AS builder
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# pre-copy/cache go.mod for pre-downloading dependencies and only redownloading them in subsequent builds if they change
 COPY . .
 
-CMD ["go", "run" , "helloworld.go"]
+RUN go build -o hello
+
+FROM scratch
+
+COPY --from=builder /app/hello /hello
+
+CMD ["/hello"]
